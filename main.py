@@ -14,7 +14,8 @@ class Game:
         self.menu = Menu(self)
 
     def restart(self):
-        self.grid = Grid(self.screen)
+        self.grid = Grid(self)
+        self.pause = False
         
     def draw(self):
         self.screen.fill("gray")
@@ -38,7 +39,8 @@ class Game:
     def run(self):
         while True:
             self.check_events()
-            self.draw()
+            if not self.pause:
+                self.draw()
             self.menu.update()   
             self.update()
         

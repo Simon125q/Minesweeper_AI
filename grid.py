@@ -3,10 +3,12 @@ from random import randint
 from settings import *
 
 class Grid:
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self, game):
+        self.screen = game.screen
+        self.game = game
         self.create_grid()
         self.win = False
+        self.lost = False
         
     def __str__(self):
         visual = ''
@@ -95,13 +97,29 @@ class Grid:
             self.grid[curr_x - 1][curr_y + 1].state = State.VISITED
         if curr_y + 1 < GRID_SIZE and curr_x + 1 < GRID_SIZE:
             self.grid[curr_x + 1][curr_y + 1].state = State.VISITED      
+    
+    def check_if_lost(self):
+        for row in self.grid:
+            for box in row:
+                if box.value == "B" and box.state == State.VISITED:
+                    self.show_bombs()
+                    self.game.pause = True
         
+    def show_bombs(self):
+        for row in self.grid:
+            for box in row:
+                if box.value == "B":
+                    box.state = State.VISITED
+                
     def update(self):
+        self.check_if_lost()
         for row in self.grid:
             for box in row:
                 if box.state == State.VISITED and box.value == '0':
                     self.unveil_zero(box)
+                
                 box.draw(self.screen)
+                box.cooldown()
             
 
 class Box:
@@ -112,6 +130,9 @@ class Box:
         self.state = State.UNVISITED
         self.value = ''
         self.hovered = False
+        self.click_time = None
+        self.can_click = True
+        self.click_cooldown = 300
         
         self.rect = pygame.Rect((self.x + 1, self.y + 1), (TILE - 2, TILE - 2))
         
@@ -137,6 +158,11 @@ class Box:
             self.text_rect = self.text_surf.get_rect(center = self.rect.center)
             screen.blit(self.text_surf, self.text_rect)
         
+    def cooldown(self):
+        current_time = pygame.time.get_ticks()
+        if not self.can_click and current_time - self.click_time > self.click_cooldown:
+            self.can_click = True
+        
     def check_click(self):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
@@ -146,10 +172,15 @@ class Box:
                     self.state = State.VISITED
                     if self.value == '0':
                         self.grid.unveil_zero(self)
-            if pygame.mouse.get_pressed()[2]:
+                    elif self.value == 'B':
+                        self.grid.lost = True
+            if self.can_click and pygame.mouse.get_pressed()[2]:
+                self.click_time = pygame.time.get_ticks()
+                self.can_click = False
                 if self.state == State.UNVISITED:
                     self.state = State.FLAG
                 elif self.state == State.FLAG:
+                    
                     self.state = State.UNVISITED
         else:
             self.hovered = False
