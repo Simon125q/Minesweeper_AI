@@ -9,7 +9,7 @@ class Menu:
         self.main_menu()
         
     def main_menu(self):
-        options = ['AI MOVE', 'RESET', "EXIT"]
+        options = ['AI MOVE', 'AI SOLVE', 'RESET', "EXIT"]
         grid = GRID_SIZE * TILE
         start_x = grid + (WIDTH - grid) // 2
         for num, option in enumerate(options):
@@ -17,7 +17,11 @@ class Menu:
         
     def check_actions(self):
         if self.buttons[AI_MOVE].active:
+            self.game.ai.make_move()
             self.buttons[AI_MOVE].active = False
+        elif self.buttons[AI_SOLVE].active:
+            self.game.ai.solve()
+            self.buttons[AI_SOLVE].active = False
         elif self.buttons[RESET].active:
             self.game.restart()
             self.buttons[RESET].active = False

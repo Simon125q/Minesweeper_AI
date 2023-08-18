@@ -5,7 +5,7 @@ pygame.init()
 
 
 FPS = 60
-GRID_SIZE = 10
+GRID_SIZE = 45
 TILE = 20
 MENU_WIDTH = 260
 WIDTH, HEIGHT = RES = (GRID_SIZE * TILE + MENU_WIDTH, GRID_SIZE * TILE)
@@ -19,7 +19,7 @@ class State(Enum):
     FLAG = 'red'
     BOMB = 'black'
     
-BOMB_NUM = int(GRID_SIZE * GRID_SIZE * 0.2)
+BOMB_NUM = int(GRID_SIZE * GRID_SIZE * 0.15)
     
 # Menu
 BUTTON_SPACING = 35
@@ -33,5 +33,6 @@ BUTTON_COLOR = '#778da9'
 BUTTON_COLOR_BORDER = '#1b263b'
 MATCHING_RED = '#BC4749'
 AI_MOVE = 0
-RESET = 1
-EXIT = 2
+AI_SOLVE = 1
+RESET = 2
+EXIT = 3

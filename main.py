@@ -3,6 +3,7 @@ import sys
 from settings import *
 from grid import Grid
 from menu import Menu
+from ai import AI
 
 
 class Game:
@@ -16,9 +17,12 @@ class Game:
     def restart(self):
         self.grid = Grid(self)
         self.pause = False
+        self.ai = AI(self.grid)
         
     def draw(self):
         self.screen.fill("gray")
+        if self.grid.check_if_lost() or self.grid.check_if_won():
+                self.pause = True
         self.grid.update()
         
     def check_events(self):
@@ -30,11 +34,14 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.restart()
+                    
+           
     
     def update(self):
         pygame.display.flip()
         self.clock.tick(FPS)
         pygame.display.set_caption('Minesweeper')
+        
         
     def run(self):
         while True:

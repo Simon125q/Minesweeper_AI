@@ -9,6 +9,7 @@ class Grid:
         self.create_grid()
         self.win = False
         self.lost = False
+        self.bomb_color = 'red'
         
     def __str__(self):
         visual = ''
@@ -48,62 +49,47 @@ class Grid:
                     bombs = self.calculate_bombs(self.grid[row][col])
                     self.grid[row][col].value = str(bombs)
                     
+    def get_neighbours(self, cell):
+        neighbours = []
+        curr_x = cell.x // TILE
+        curr_y = cell.y // TILE
+        if curr_x - 1 >= 0:
+            neighbours.append(self.grid[curr_x - 1][curr_y])
+        if curr_y - 1 >= 0:
+            neighbours.append(self.grid[curr_x][curr_y - 1])
+        if curr_x + 1 < GRID_SIZE:
+            neighbours.append(self.grid[curr_x + 1][curr_y])
+        if curr_y + 1 < GRID_SIZE:
+            neighbours.append(self.grid[curr_x][curr_y + 1])
+        if curr_x - 1 >= 0 and curr_y - 1 >= 0:
+            neighbours.append(self.grid[curr_x - 1][curr_y - 1])
+        if curr_y - 1 >= 0 and curr_x + 1 < GRID_SIZE:
+            neighbours.append(self.grid[curr_x + 1][curr_y - 1])
+        if curr_y + 1 < GRID_SIZE and curr_x - 1 >= 0:
+            neighbours.append(self.grid[curr_x - 1][curr_y + 1])
+        if curr_y + 1 < GRID_SIZE and curr_x + 1 < GRID_SIZE:
+            neighbours.append(self.grid[curr_x + 1][curr_y + 1])    
+            
+        return neighbours    
+                    
     def calculate_bombs(self, curr):
         bombs = 0
-        curr_x = curr.x // TILE
-        curr_y = curr.y // TILE
-        if curr_x - 1 >= 0:
-            if self.grid[curr_x - 1][curr_y].value == "B":
+        neighbours = self.get_neighbours(curr)
+        for neighbour in neighbours:
+            if neighbour.value == "B":
                 bombs += 1
-        if curr_y - 1 >= 0:
-            if self.grid[curr_x][curr_y - 1].value == "B":
-                bombs += 1
-        if curr_x + 1 < GRID_SIZE:
-            if self.grid[curr_x + 1][curr_y].value == "B":
-                bombs += 1
-        if curr_y + 1 < GRID_SIZE:
-            if self.grid[curr_x][curr_y + 1].value == "B":
-                bombs += 1
-        if curr_x - 1 >= 0 and curr_y - 1 >= 0:
-            if self.grid[curr_x - 1][curr_y - 1].value == "B":
-                bombs += 1
-        if curr_y - 1 >= 0 and curr_x + 1 < GRID_SIZE:
-            if self.grid[curr_x + 1][curr_y - 1].value == "B":
-                bombs += 1
-        if curr_y + 1 < GRID_SIZE and curr_x - 1 >= 0:
-            if self.grid[curr_x - 1][curr_y + 1].value == "B":
-                bombs += 1
-        if curr_y + 1 < GRID_SIZE and curr_x + 1 < GRID_SIZE:
-            if self.grid[curr_x + 1][curr_y + 1].value == "B":
-                bombs += 1           
         return bombs
     
     def unveil_field(self, curr):
-        curr_x = curr.x // TILE
-        curr_y = curr.y // TILE
-        if curr_x - 1 >= 0:
-            self.grid[curr_x - 1][curr_y].state = State.VISITED
-        if curr_y - 1 >= 0:
-            self.grid[curr_x][curr_y - 1].state = State.VISITED
-        if curr_x + 1 < GRID_SIZE:
-            self.grid[curr_x + 1][curr_y].state = State.VISITED
-        if curr_y + 1 < GRID_SIZE:
-            self.grid[curr_x][curr_y + 1].state = State.VISITED
-        if curr_x - 1 >= 0 and curr_y - 1 >= 0:
-            self.grid[curr_x - 1][curr_y - 1].state = State.VISITED
-        if curr_y - 1 >= 0 and curr_x + 1 < GRID_SIZE:
-            self.grid[curr_x + 1][curr_y - 1].state = State.VISITED
-        if curr_y + 1 < GRID_SIZE and curr_x - 1 >= 0:
-            self.grid[curr_x - 1][curr_y + 1].state = State.VISITED
-        if curr_y + 1 < GRID_SIZE and curr_x + 1 < GRID_SIZE:
-            self.grid[curr_x + 1][curr_y + 1].state = State.VISITED      
+        neighbours = self.get_neighbours(curr)
+        for neighbour in neighbours:
+            neighbour.state = State.VISITED
     
     def check_if_lost(self):
         for row in self.grid:
             for box in row:
                 if box.value == "B" and box.state == State.VISITED:
                     self.show_bombs()
-                    self.game.pause = True
                     return True
         return False
     
@@ -122,7 +108,9 @@ class Grid:
                 
     def update(self):
         self.check_if_lost()
-        self.check_if_won()
+        if self.check_if_won():
+            self.bomb_color = 'green'
+            self.show_bombs()
         for row in self.grid:
             for box in row:
                 if box.state == State.VISITED and box.value == '0':
@@ -162,6 +150,8 @@ class Box:
                 color = 'green'
             elif self.value == '2':
                 color = 'yellow'
+            elif self.value == 'B':
+                color = self.grid.bomb_color
             else:
                 color = 'red'    
             self.text_surf = FONT.render(self.value, True, color)
