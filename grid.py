@@ -78,7 +78,7 @@ class Grid:
                 bombs += 1           
         return bombs
     
-    def unveil_zero(self, curr):
+    def unveil_field(self, curr):
         curr_x = curr.x // TILE
         curr_y = curr.y // TILE
         if curr_x - 1 >= 0:
@@ -104,6 +104,15 @@ class Grid:
                 if box.value == "B" and box.state == State.VISITED:
                     self.show_bombs()
                     self.game.pause = True
+                    return True
+        return False
+    
+    def check_if_won(self):
+        for row in self.grid:
+            for box in row:
+                if box.value != "B" and box.state == State.UNVISITED or box.value == "B" and box.state == State.VISITED:
+                    return False
+        return True
         
     def show_bombs(self):
         for row in self.grid:
@@ -113,10 +122,11 @@ class Grid:
                 
     def update(self):
         self.check_if_lost()
+        self.check_if_won()
         for row in self.grid:
             for box in row:
                 if box.state == State.VISITED and box.value == '0':
-                    self.unveil_zero(box)
+                    self.unveil_field(box)
                 
                 box.draw(self.screen)
                 box.cooldown()
@@ -171,7 +181,7 @@ class Box:
                 if self.state == State.UNVISITED:
                     self.state = State.VISITED
                     if self.value == '0':
-                        self.grid.unveil_zero(self)
+                        self.grid.unveil_field(self)
                     elif self.value == 'B':
                         self.grid.lost = True
             if self.can_click and pygame.mouse.get_pressed()[2]:
