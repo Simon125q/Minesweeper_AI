@@ -51,18 +51,18 @@ class AI:
                     if flags == int(box.value):
                         self.unveil_field(box)
                         rand = False
+                        break
                     elif neighbour_count == int(box.value):
                         self.flag_neighbours(box)
                         rand = False
+                        break
         while rand and not self.grid.check_if_won() and not self.grid.check_if_lost():
             rand_x = randint(0, GRID_SIZE-1)
             rand_y = randint(0, GRID_SIZE-1)
             if self.grid.grid[rand_x][rand_y].state == State.UNVISITED:
                 self.grid.grid[rand_x][rand_y].state = State.VISITED
                 rand = False
-        print("move done")
                 
     def solve(self):
-        while not self.grid.check_if_won() and not self.grid.check_if_lost():
+        if not self.grid.check_if_won() and not self.grid.check_if_lost():
             self.make_move()
-        print("finished")

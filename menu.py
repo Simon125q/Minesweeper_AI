@@ -20,7 +20,7 @@ class Menu:
             self.game.ai.make_move()
             self.buttons[AI_MOVE].active = False
         elif self.buttons[AI_SOLVE].active:
-            self.game.ai.solve()
+            self.game.solve_board = True
             self.buttons[AI_SOLVE].active = False
         elif self.buttons[RESET].active:
             self.game.restart()

@@ -18,6 +18,7 @@ class Game:
         self.grid = Grid(self)
         self.pause = False
         self.ai = AI(self.grid)
+        self.solve_board = False
         
     def draw(self):
         self.screen.fill("gray")
@@ -35,17 +36,16 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.restart()
                     
-           
-    
     def update(self):
         pygame.display.flip()
         self.clock.tick(FPS)
         pygame.display.set_caption('Minesweeper')
         
-        
     def run(self):
         while True:
             self.check_events()
+            if self.solve_board:
+                self.ai.solve()
             if not self.pause:
                 self.draw()
             self.menu.update()   
