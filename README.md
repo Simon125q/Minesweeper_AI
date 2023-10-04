@@ -18,5 +18,5 @@ Minesweeper game written in python module pygame, with options to solve current 
 
 ![App Screenshot](https://github.com/Simon125q/Minesweeper_AI/blob/main/other/scr_02.png)
 
-![App Screenshot](https://github.com/Simon125q/Minesweeper_AI/blob/main/other/scr_02.png)
+![App Screenshot](https://github.com/Simon125q/Minesweeper_AI/blob/main/other/scr_03.png)
  
