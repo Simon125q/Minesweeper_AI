@@ -1,5 +1,5 @@
 # Minesweeper AI
-Minesweeper game written in python module pygame, with options to solve current borad automaticly or make next best move
+Minesweeper game written in python module pygame, with implemented AI to solve current borad automaticly or make next best move
 
 ## Demo
 
